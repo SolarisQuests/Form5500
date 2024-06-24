@@ -270,13 +270,13 @@ async function searchInAllCollections(dbName, searchTerm) {
           return acc;
         }, {});
     
-        // const finalResult = Object.values(groupedResult);
+         const finalResult = Object.values(groupedResult);
     
         // console.log(finalResult);
-        const finalResult = {
-      headings,
-      collections: Object.values(groupedResult)
-    };
+    //     const finalResult = {
+    //   headings,
+    //   collections: Object.values(groupedResult)
+    // };
        
         return finalResult;
       }catch(error){
