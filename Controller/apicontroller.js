@@ -185,15 +185,152 @@ async function searchInAllCollections(dbName, searchTerm) {
     }
 
 
-    export const specificesearch2=async(req,res)=>{
-      const { searchTerm } = req.body;
+    // export const specificesearch2=async(req,res)=>{
+    //   const { searchTerm } = req.body;
 
+    //    if (!searchTerm) {
+    //    return res.status(400).send('Invalid input');
+    //    }
+
+    //   try {
+    //     const result = await focusedsearch(searchTerm);
+    //     res.send(result);
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // }
+
+
+    // async function focusedsearch(searchTerm) {
+    //   const url = 'mongodb+srv://doadmin:o67C08s3keP45vM9@db-mongodb-nyc3-75708-9e7d3949.mongo.ondigitalocean.com'; // Update with your MongoDB URL
+    //   const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+    
+    
+    //   const collectionsToSearch = ['f_5500_2019_latest', 'f_5500_2020_latest', 'f_5500_2021_latest', 'f_5500_2023_latest', 'F_5500_2022_Latest'];
+    //   const defaultFields = [
+    //     'PLAN_NAME',
+    //     'SPONSOR_DFE_NAME',
+    //     'SPONS_DFE_MAIL_US_ADDRESS1',
+    //     'SPONS_DFE_MAIL_US_CITY',
+    //     'SPONS_DFE_MAIL_US_STATE',
+    //     'SPONS_DFE_MAIL_US_ZIP'
+    //   ];
+
+    //   const fieldsToDisplay = [
+    //     '_id',
+    //     'ACK_ID',
+    //     'FORM_PLAN_YEAR_BEGIN_DATE',
+    //     'FORM_TAX_PRD',
+    //     'PLAN_NAME',
+    //     'PLAN_EFF_DATE',
+    //     'SPONSOR_DFE_NAME',
+    //     'SPONS_DFE_MAIL_US_ADDRESS1',
+    //     'SPONS_DFE_MAIL_US_CITY',
+    //     'SPONS_DFE_MAIL_US_STATE',
+    //     'SPONS_DFE_MAIL_US_ZIP',
+    //     'SPONS_DFE_EIN',
+    //     'SPONS_DFE_PHONE_NUM',
+    //     'BUSINESS_CODE',
+    //     'ADMIN_SIGNED_DATE',
+    //     'ADMIN_SIGNED_NAME',
+    //     'TOT_ACT_PARTCP_BOY_CNT'
+    //   ];
+    
+    //   try {
+     
+    //     await client.connect();
+    //     console.log('Connected to the database');
+    
+    //     const db = client.db(dbName);
+    //     let results = [];
+    // // let headings=[]
+    // const headings = fieldsToDisplay;
+    //     for (const collectionName of collectionsToSearch) {
+    //       const col = db.collection(collectionName);
+    
+    //       const sampleDoc = await col.findOne();
+    //       if (!sampleDoc) {
+    //         console.log(`No documents found in the collection ${collectionName}`);
+    //         continue;
+    //       }
+
+    //       // if (headings.length === 0) {
+    //         // headings = Object.keys(sampleDoc);
+    //       // }
+    //       console.log(collectionName,headings.length)
+    //       // console.log(headings.length)
+    
+    //       const relevantFields = defaultFields.filter(field => sampleDoc.hasOwnProperty(field));
+    //       if (relevantFields.length === 0) {
+    //         continue; // Skip this collection if none of the relevant fields are present
+    //       }
+    
+    //       const query = {
+    //         $or: relevantFields.map(field => {
+    //           const fieldQuery = {};
+    //           fieldQuery[field] = typeof searchTerm === 'number' ? searchTerm : { $regex: searchTerm, $options: 'i' };
+    //           return fieldQuery;
+    //         })
+    //       };
+    
+    //       // console.log("query:::", query, "collectionname:::", collectionName);
+    
+    //       const colResults = await col.find(query).toArray();
+    //       const filteredResults = colResults.map(doc => {
+    //         const filteredDoc = {};
+    //         fieldsToDisplay.forEach(field => {
+    //           if (doc[field] !== undefined) {
+    //             filteredDoc[field] = doc[field];
+    //           }
+    //         });
+    //         return { collection: collectionName, document: filteredDoc };
+    //       });
+    
+    //       results = results.concat(filteredResults);
+    //     }
+    //       // results = results.concat(colResults.map(doc => ({ collection: collectionName, document: doc })));
+        
+    
+    //     const groupedResult = results.reduce((acc, item) => {
+    //       const { collection, document } = item;
+    
+    //       if (!acc[collection]) {
+    //         acc[collection] = { collection, documents: [] };
+    //       }
+    
+    //       acc[collection].documents.push(document);
+    
+    //       return acc;
+    //     }, {});
+    
+    //     // const finalResult = Object.values(groupedResult);
+    
+    //     // console.log(finalResult);
+    //     const finalResult = {
+    //   headings,
+    //   collections: Object.values(groupedResult)
+    // };
+       
+    //     return finalResult;
+    //   }catch(error){
+    //     console.log(error)
+    //   }
+
+     
+    // }
+
+    export const specificesearch2=async(req,res)=>{
+      const  searchTerm  = req.body.searchTerm;
+      const  searchTerm_user  = req.body.searchTerm_user;
+
+      console.log(searchTerm)
+      
        if (!searchTerm) {
        return res.status(400).send('Invalid input');
        }
 
       try {
-        const result = await focusedsearch(searchTerm);
+        const result = await focusedsearch(searchTerm,searchTerm_user);
         res.send(result);
       } catch (error) {
         console.log(error)
@@ -201,7 +338,7 @@ async function searchInAllCollections(dbName, searchTerm) {
     }
 
 
-    async function focusedsearch(searchTerm) {
+    async function focusedsearch(searchTerm,searchTerm2) {
       const url = 'mongodb+srv://doadmin:o67C08s3keP45vM9@db-mongodb-nyc3-75708-9e7d3949.mongo.ondigitalocean.com'; // Update with your MongoDB URL
       const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
     
@@ -210,10 +347,10 @@ async function searchInAllCollections(dbName, searchTerm) {
       const defaultFields = [
         'PLAN_NAME',
         'SPONSOR_DFE_NAME',
-        'SPONS_DFE_MAIL_US_ADDRESS1',
-        'SPONS_DFE_MAIL_US_CITY',
-        'SPONS_DFE_MAIL_US_STATE',
-        'SPONS_DFE_MAIL_US_ZIP'
+        // 'SPONS_DFE_MAIL_US_ADDRESS1',
+        // 'SPONS_DFE_MAIL_US_CITY',
+        // 'SPONS_DFE_MAIL_US_STATE',
+        // 'SPONS_DFE_MAIL_US_ZIP'
       ];
 
       const fieldsToDisplay = [
@@ -245,6 +382,8 @@ async function searchInAllCollections(dbName, searchTerm) {
         let results = [];
     // let headings=[]
     const headings = fieldsToDisplay;
+    const searchTerms = [searchTerm,searchTerm2];
+    //   console.log(searchTerms)
         for (const collectionName of collectionsToSearch) {
           const col = db.collection(collectionName);
     
@@ -265,15 +404,22 @@ async function searchInAllCollections(dbName, searchTerm) {
             continue; // Skip this collection if none of the relevant fields are present
           }
     
-          const query = {
-            $or: relevantFields.map(field => {
-              const fieldQuery = {};
-              fieldQuery[field] = typeof searchTerm === 'number' ? searchTerm : { $regex: searchTerm, $options: 'i' };
-              return fieldQuery;
-            })
+          // const query = {
+          //   $or: relevantFields.map(field => {
+          //     const fieldQuery = {};
+          //     fieldQuery[field] = typeof searchTerm === 'number' ? searchTerm : { $regex: searchTerm, $options: 'i' };
+          //     return fieldQuery;
+          //   })
+          // };
+                  const query = {
+            $or: searchTerms.flatMap(term => 
+              relevantFields.map(field => ({
+                [field]: typeof term === 'number' ? term : { $regex: term, $options: 'i' }
+              }))
+            )
           };
     
-          // console.log("query:::", query, "collectionname:::", collectionName);
+           console.log("query:::", query, "collectionname:::", collectionName);
     
           const colResults = await col.find(query).toArray();
           const filteredResults = colResults.map(doc => {
