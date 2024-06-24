@@ -223,7 +223,7 @@ async function searchInAllCollections(dbName, searchTerm) {
     
         const db = client.db(dbName);
         let results = [];
-    
+    let headings=[]
         for (const collectionName of collectionsToSearch) {
           const col = db.collection(collectionName);
     
@@ -232,6 +232,12 @@ async function searchInAllCollections(dbName, searchTerm) {
             console.log(`No documents found in the collection ${collectionName}`);
             continue;
           }
+
+          if (headings.length === 0) {
+            headings = Object.keys(sampleDoc).filter(key => defaultFields.includes(key) || true);
+          }
+
+          console.log(headings.length)
     
           const relevantFields = defaultFields.filter(field => sampleDoc.hasOwnProperty(field));
           if (relevantFields.length === 0) {
@@ -246,7 +252,7 @@ async function searchInAllCollections(dbName, searchTerm) {
             })
           };
     
-          console.log("query:::", query, "collectionname:::", collectionName);
+          // console.log("query:::", query, "collectionname:::", collectionName);
     
           const colResults = await col.find(query).toArray();
           results = results.concat(colResults.map(doc => ({ collection: collectionName, document: doc })));
@@ -264,10 +270,14 @@ async function searchInAllCollections(dbName, searchTerm) {
           return acc;
         }, {});
     
-        const finalResult = Object.values(groupedResult);
+        // const finalResult = Object.values(groupedResult);
     
-        console.log(finalResult);
-    
+        // console.log(finalResult);
+        const finalResult = {
+      headings,
+      collections: Object.values(groupedResult)
+    };
+       
         return finalResult;
       }catch(error){
         console.log(error)
@@ -275,6 +285,7 @@ async function searchInAllCollections(dbName, searchTerm) {
 
      
     }
+
 
  
   
