@@ -215,6 +215,26 @@ async function searchInAllCollections(dbName, searchTerm) {
         'SPONS_DFE_MAIL_US_STATE',
         'SPONS_DFE_MAIL_US_ZIP'
       ];
+
+      const fieldsToDisplay = [
+        '_id',
+        'ACK_ID',
+        'FORM_PLAN_YEAR_BEGIN_DATE',
+        'FORM_TAX_PRD',
+        'PLAN_NAME',
+        'PLAN_EFF_DATE',
+        'SPONSOR_DFE_NAME',
+        'SPONS_DFE_MAIL_US_ADDRESS1',
+        'SPONS_DFE_MAIL_US_CITY',
+        'SPONS_DFE_MAIL_US_STATE',
+        'SPONS_DFE_MAIL_US_ZIP',
+        'SPONS_DFE_EIN',
+        'SPONS_DFE_PHONE_NUM',
+        'BUSINESS_CODE',
+        'ADMIN_SIGNED_DATE',
+        'ADMIN_SIGNED_NAME',
+        'TOT_ACT_PARTCP_BOY_CNT'
+      ];
     
       try {
      
@@ -223,7 +243,8 @@ async function searchInAllCollections(dbName, searchTerm) {
     
         const db = client.db(dbName);
         let results = [];
-    let headings=[]
+    // let headings=[]
+    const headings = fieldsToDisplay;
         for (const collectionName of collectionsToSearch) {
           const col = db.collection(collectionName);
     
@@ -233,11 +254,11 @@ async function searchInAllCollections(dbName, searchTerm) {
             continue;
           }
 
-          if (headings.length === 0) {
-            headings = Object.keys(sampleDoc).filter(key => defaultFields.includes(key) || true);
-          }
-
-          console.log(headings.length)
+          // if (headings.length === 0) {
+            // headings = Object.keys(sampleDoc);
+          // }
+          console.log(collectionName,headings.length)
+          // console.log(headings.length)
     
           const relevantFields = defaultFields.filter(field => sampleDoc.hasOwnProperty(field));
           if (relevantFields.length === 0) {
@@ -255,8 +276,20 @@ async function searchInAllCollections(dbName, searchTerm) {
           // console.log("query:::", query, "collectionname:::", collectionName);
     
           const colResults = await col.find(query).toArray();
-          results = results.concat(colResults.map(doc => ({ collection: collectionName, document: doc })));
+          const filteredResults = colResults.map(doc => {
+            const filteredDoc = {};
+            fieldsToDisplay.forEach(field => {
+              if (doc[field] !== undefined) {
+                filteredDoc[field] = doc[field];
+              }
+            });
+            return { collection: collectionName, document: filteredDoc };
+          });
+    
+          results = results.concat(filteredResults);
         }
+          // results = results.concat(colResults.map(doc => ({ collection: collectionName, document: doc })));
+        
     
         const groupedResult = results.reduce((acc, item) => {
           const { collection, document } = item;
@@ -270,13 +303,13 @@ async function searchInAllCollections(dbName, searchTerm) {
           return acc;
         }, {});
     
-         const finalResult = Object.values(groupedResult);
+        // const finalResult = Object.values(groupedResult);
     
         // console.log(finalResult);
-    //     const finalResult = {
-    //   headings,
-    //   collections: Object.values(groupedResult)
-    // };
+        const finalResult = {
+      headings,
+      collections: Object.values(groupedResult)
+    };
        
         return finalResult;
       }catch(error){
